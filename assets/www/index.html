@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+	<title>Lacalle Proyecto</title>
+	<meta name="viewport" content="width=320; user-scalable=no" />
+    <script type="text/javascript" charset="utf-8" src="cordova-1.9.0.js"></script>
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="jquery.mobile/jquery-1.7.2.min"></script>
+	
+	<script type="text/javascript" charset="utf-8">
+      
+        var onDeviceReady = function() {
+            document.getElementById("devready").innerHTML = "OnDeviceReady fired.";
+        };
+
+        function init() {
+            document.addEventListener("deviceready", onDeviceReady, true);
+        }   
+   </script>  
+</head>
+<body onload="init();">
+<div id="landmark-1" data-landmark-id="1">
+
+<form  id="form" >
+    <label> Titulo </label></br>
+    <input type="text" name="titulo" value="" placeholder="Titulo"> </br>
+    <label for="">Descripcion</label></br>
+    <textarea name="descripcion"  placeholder="Escribir descripcion"></textarea></br>
+    <label for="">Tematica</label>
+    <select name="tematica" >
+    	<option value="A">Tipo A</option>
+    	<option value="B">Tipo B</option>
+    	<option value="C">Tipo C</option>
+    </select>
+	
+    <input id="button" type="button" value="Enviar">
+
+</form>
+<span id="devready">onDeviceReady not fired.</span>
+</div>
+
+<script>
+	var img_b64="";
+	var Base64 = {
+		/**
+		* This implementation relies on Cordova 1.5 or above implementations.
+		*/
+		getBase64ImageFromInput : function (input, callback) {
+			var imageReader = new FileReader();
+			imageReader.onloadend = function (evt) {
+				if (callback)
+				callback(evt.target.result);
+				};
+				//Start the asynchronous data read.
+				imageReader.readAsDataURL(input);
+				},
+				formatImageSrcString : function (base64) {
+			return (base64.match(/(base64)/))? base64 : "data:image/jpeg;base64," + base64;
+			} 
+	};	
+	var fileInput=document.getElementById("input");
+	fileInput.type = 'file';
+	fileInput.onchange = function () {
+		var input = this.files[0];
+		if (input) {
+			Base64.getBase64ImageFromInput(input, function (imageData) {
+			//Process the image string. 
+			img_b64=imageData;
+			console.log(imageData);
+			});
+		} 
+		else {
+			//alert("Please select an image.");
+		}
+	};
+		
+	$('#button').click(function(e){
+		var params=$("form").serialize();
+	   
+	    $.ajax({
+	        type: 'POST',
+	        url: 'http://10.0.2.2/formajaxsave.php',	
+	        data:params,	
+	        success: function(data){	
+	            alert('Your comment was successfully added');	
+	        },
+	        error: function(){	
+	            alert('There was an error adding your comment');	
+	        }	
+	    });	
+	    return false;	
+	});
+
+</script>
+
+</body>
+</html>
